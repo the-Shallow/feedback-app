@@ -33,13 +33,14 @@ export const FeedBackContextProvider = ({ children }) => {
 
   const updateFeedBack = (id, updatedFeedback) => {
     setFeedback(
-        feedback.map((item) => {
-            console.log({ ...item, ...updatedFeedback });
-            return item.id === id ? { ...item, ...updatedFeedback } : item
-        }
-      )
+      feedback.map((item) => {
+        console.log({ ...item, ...updatedFeedback });
+        return item.id === id ? { ...item, ...updatedFeedback } : item;
+      })
     );
-    console.log("hello",feedback);
+
+    setEditFeedBack({ item: {}, edit: false });
+    console.log("hello", feedback);
   };
 
   return (
