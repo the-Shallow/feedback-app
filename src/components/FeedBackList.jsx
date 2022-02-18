@@ -5,7 +5,7 @@ import FeedBackContext from "../context/FeedBackContext";
 function FeedBackList() {
     const { feedback } = useContext(FeedBackContext);
     console.log(feedback);
-    if (!feedback || feedback.length == 0) {
+    if (!feedback || feedback.length === 0) {
      return (<div>No FeedBack</div>)   
     } 
 

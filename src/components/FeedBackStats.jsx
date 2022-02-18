@@ -7,7 +7,7 @@ function FeedBackStats() {
     
     function avgRating(feedback) {
 
-        if (feedback.length == 0) return 0;
+        if (feedback.length === 0) return 0;
 
         let sum = 0;
         feedback.forEach((item) => {
