@@ -1,47 +1,69 @@
-import { useState, createContext } from "react";
+import { useState, createContext, useEffect } from "react";
 
 const FeedBackContext = createContext();
 
 export const FeedBackContextProvider = ({ children }) => {
-  const [feedback, setFeedback] = useState([
-    {
-      id: 1,
-      text: "Hello World",
-      rating: 5,
-    },
-  ]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [feedback, setFeedback] = useState([]);
 
   const [editFeedBack, setEditFeedBack] = useState({
     item: {},
     edit: false,
   });
 
-  const addFeedBack = (newFeedBack) => {
-    newFeedBack.id = feedback.length + 1;
-    setFeedback([newFeedBack, ...feedback]);
-  };
+  useEffect(() => {
+    fetchFeeback();
+  }, []);
 
-  const deleteFeedBack = (id) => {
-    if (window.confirm("Are your sure you want to delete?")) {
-      setFeedback(feedback.filter((item) => item.id !== id));
-    }
-  };
+    const fetchFeeback = async () => {
+        const feedback = await fetch("http://localhost:5500/feedback");
+
+        const data = await feedback.json();
+
+        setFeedback(data);
+        setIsLoading(false);
+    };
+
+    const addFeedBack = async (newFeedBack) => {
+        await fetch("http://localhost:5500/feedback", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newFeedBack),
+        });
+
+        fetchFeeback();
+    };
+
+    const deleteFeedBack = async (id) => {
+        if (window.confirm("Are your sure you want to delete?")) {
+            await fetch(`http://localhost:5500/feedback/${id}`, {
+                method:"DELETE"
+            });
+            fetchFeeback();
+        }
+    };
 
   const editedFeedback = (item) => {
     setEditFeedBack({ item, edit: true });
   };
 
-  const updateFeedBack = (id, updatedFeedback) => {
-    setFeedback(
-      feedback.map((item) => {
-        console.log({ ...item, ...updatedFeedback });
-        return item.id === id ? { ...item, ...updatedFeedback } : item;
-      })
-    );
+    const updateFeedBack = async (id, updatedFeedback) => {
+      
+        await fetch(`http://localhost:5500/feedback/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updatedFeedback),
+        });
 
-    setEditFeedBack({ item: {}, edit: false });
-    console.log("hello", feedback);
-  };
+        fetchFeeback();
+
+        setEditFeedBack({ item: {}, edit: false });
+        console.log("hello", feedback);
+    };
 
   return (
     <FeedBackContext.Provider
@@ -52,6 +74,7 @@ export const FeedBackContextProvider = ({ children }) => {
         editedFeedback,
         editFeedBack,
         updateFeedBack,
+        isLoading,
       }}
     >
       {children}
